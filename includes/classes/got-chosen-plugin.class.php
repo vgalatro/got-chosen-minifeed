@@ -27,19 +27,20 @@ class GOT_CHOSEN_INTG_PLUGIN {
   }
   private function get_gcid() {
     if ($gcid = get_transient('got_chosen_intg_gcid')) {
-      echo '<pre>from cache: '.$gcid.'</pre>';
       return $gcid;
     }
     else {
       $gcid = $this->api->verifyminifeed();
-      echo '<pre>from call: '.$gcid.'</pre>';
       set_transient('got_chosen_intg_gcid', $gcid, (24*60*60));
       return $gcid;
     }
   }
   public function enqueue_scripts() {
     wp_register_script('gc_webcurtain', $this->includes_url . '/js/gc-webcurtain.js', array('jquery'));
-    wp_localize_script('gc_webcurtain', 'gc_intg_plugin', array('gcid' => $this->GCID));
+    wp_localize_script('gc_webcurtain', 'gc_intg_plugin', array(
+      'gcid' => $this->GCID,
+      'compat' => false,
+    ));
     wp_enqueue_script('gc_webcurtain');
   }
 }

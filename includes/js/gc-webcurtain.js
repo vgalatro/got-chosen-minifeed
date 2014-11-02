@@ -10,4 +10,4 @@
   o.parentNode.insertBefore(s, o)
 })(window, document, "script", "//gotchosen.com/thirdparty/gc.js", "gc");
 var $ = jQuery;
-gc("webcurtain", gc_intg_plugin.gcid);
+gc("webcurtain", gc_intg_plugin.gcid, gc_intg_plugin.compat);
