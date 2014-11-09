@@ -65,7 +65,8 @@ class GOT_CHOSEN_API_HANDLER {
       foreach ($this->notices as $notice) {
         echo '<p>' . $notice . '</p>';
       }
-      echo '<div>';
+      echo '</div>';
+      delete_transient('got_chosen_api_notices');
     } 
   }
 }
