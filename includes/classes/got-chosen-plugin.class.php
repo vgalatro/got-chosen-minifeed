@@ -1,16 +1,81 @@
 <?php
-
+/**
+ * Our main plugin class.
+ */
 class GOT_CHOSEN_INTG_PLUGIN {
+
+  /**
+   * Holds an instance of the API class.
+   *
+   * @since 1.0
+   * @access private
+   * @var object $api Holds an instance of the API class passed in to the constructor.
+   */
   private $api;
+
+  /**
+   * Contains the path to the includes folder.
+   *
+   * @since 1.0
+   * @access private
+   * @var string $includes_path Path to plugin's includes folder so it
+   *  does not need to be evaluated repeatedly.
+   */
   private $includes_path;
+
+  /**
+   * Contains the URL to the includes folder.
+   *
+   * @since 1.0
+   * @access private
+   * @var string $includes_url URL to plugin's includes folder so it
+   *  does not need to be evaluated repeatedly.
+   */
   private $includes_url;
+
+  /**
+   * The user's GCID.
+   *
+   * @since 1.0
+   * @access private
+   * @var string $gcid Holds the GCID retrieved from the minifeed API.
+   */
   private $gcid;
+
+  /**
+   * The options array.
+   *
+   * @since 1.0
+   * @access private
+   * @var array $options Holds the options array retrieved with get_option().
+   */
   private $options;
+
+  /**
+   * Contains the posts to publish.
+   *
+   * @since 1.0
+   * @access private
+   * @var array $pub_queue Array to hold all of the information necessary
+   *   to send to the minifeed API to publish a post.
+   */
   private $pub_queue;
+
+  /**
+   * Constructor function.
+   *
+   * Private constructor used to get singleton instance of the class.
+   *
+   * @since 1.0
+   * @access private
+   *
+   * @see get_instance()
+   *
+   * @param object $api Instance of our API handler class.
+   * @param string $plugin_file File path to the main plugin file.
+   */
   private function __construct($api, $plugin_file) {
-    if ($api === null) {
-      throw new Exception("Must pass in API instance on instantiation.");
-    }
+    // Initialize our properties.
     $this -> api = $api;
     $this -> includes_path = plugin_dir_path($plugin_file) . 'includes' . DIRECTORY_SEPARATOR;
     $this -> includes_url = plugins_url('includes', $plugin_file);
@@ -20,6 +85,7 @@ class GOT_CHOSEN_INTG_PLUGIN {
     if (!$this -> pub_queue = get_transient('got_chosen_pub_queue')) {
       $this -> pub_queue = array();
     }
+    // Add necessary hooks.
     add_action('wp_enqueue_scripts', array(&$this, 'enqueue_scripts'));
     add_action('admin_enqueue_scripts', array(&$this, 'admin_enqueue_scripts'));
     add_action('save_post', array(&$this, 'save_post'));
@@ -28,13 +94,41 @@ class GOT_CHOSEN_INTG_PLUGIN {
     add_action('add_meta_boxes_post', array(&$this, 'add_meta_boxes'));
   }
 
-  public function get_instance($api = null, $plugin_file = null) {
+  /**
+   * Get instance of the class.
+   *
+   * If no instance is set, constructs a new instance and returns it.
+   *
+   * @since 1.0
+   *
+   * @see __construct()
+   *
+   * @param object $api Instance of our API handler class.
+   * @param string $plugin_file File path to the main plugin file.
+   * @return object An instance of the current class.
+   */
+  public function get_instance($api, $plugin_file) {
     static $instance = null;
     if ($instance === null) {
       $instance = new GOT_CHOSEN_INTG_PLUGIN($api, $plugin_file);
     }
     return $instance;
   }
+
+  /**
+   * Gets user's GCID.
+   *
+   * Calls the API's verifyminifeed endpoint to get the GCID
+   * based off of the user's feedkey. Stores the GCID in a
+   * transient so the API does not need to be called as frequently.
+   *
+   * @since 1.0
+   * @access private
+   *
+   * @see __construct()
+   *
+   * @return mixed The GCID or false if not retrieved.
+   */
 
   private function get_gcid() {
     if ($gcid = get_transient('got_chosen_intg_gcid')) {
@@ -49,6 +143,16 @@ class GOT_CHOSEN_INTG_PLUGIN {
     return false;
   }
 
+  /**
+   * Callback for wp_enqueue_scripts action.
+   *
+   * Attaches the webcurtain javascript if it's enabled
+   * and a GCID was obtained from the API.
+   *
+   * @since 1.0
+   *
+   * @see __construct()
+   */
   public function enqueue_scripts() {
     if ($this -> gcid && $this -> options['webcurtain']) {
       wp_register_script('gc_intg_webcurtain', $this -> includes_url . '/js/gc-webcurtain.js', array('jquery'));
@@ -57,12 +161,34 @@ class GOT_CHOSEN_INTG_PLUGIN {
     }
   }
 
+  /**
+   * Callback for admin_enqueue_scripts action.
+   *
+   * Attaches the css file for our admin page.
+   *
+   * @since 1.0
+   *
+   * @see __construct()
+   */
   public function admin_enqueue_scripts() {
     if (isset($_GET['page']) && $_GET['page'] == 'got_chosen') {
       wp_enqueue_style('gc_intg_admin_css', $this -> includes_url . '/css/admin.css');
     }
   }
 
+  /**
+   * Callback for save_post action.
+   *
+   * Saves the post meta controlling whether or not the post gets
+   * published to a minifeed. Also sees if a post should be published to
+   * the minifeed and adds it to the queue if so.
+   *
+   * @since 1.0
+   *
+   * @see __construct()
+   *
+   * @param int $post_id The ID of the post being saved.
+   */
   public function save_post($post_id) {
     // Don't do anything on the autosaving of posts.
     if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
@@ -82,18 +208,34 @@ class GOT_CHOSEN_INTG_PLUGIN {
     if (empty($minifeed_id) && isset($publish) && $publish) {
       $post = get_post($post_id);
       if ($post -> post_type = 'post') {
-        $args = array();
-        $args['title'] = $post -> post_title;
-        $args['body'] = wp_trim_words($post -> post_content, 150, '') . ' <a href="' . get_permalink($post_id) . '">' . $this -> options['read_more'] . '</a>';
-        $args['shareable'] = (bool)$this -> options['shareable'];
-        $args['commentable'] = (bool)$this -> options['commentable'];
+        $mini_post = new stdClass();
+        $mini_post -> title = $post -> post_title;
+        $mini_post -> body = wp_trim_words($post -> post_content, 150, '') . ' <a href="' . get_permalink($post_id) . '">' . $this -> options['read_more'] . '</a>';
+        $mini_post -> shareable = (bool)$this -> options['shareable'];
+        $mini_post -> commentable = (bool)$this -> options['commentable'];
+        $args['body'] = json_encode($mini_post);
         $this -> pub_queue[$post_id] = $args;
-        $this -> process_pub_queue();
       }
     }
+    // On every post save attempt to send posts to the minifeed API.
+    // This is to catch any posts that failed to send due to connectivity issues.
+    $this -> process_pub_queue();
   }
 
-  public function process_pub_queue() {
+  /**
+   * Processes the publish queue.
+   *
+   * Loops through the publish queue and attempts to publish
+   * each post to the minifeed. On success it removes the post from
+   * the queue and updates the post with the minifeed ID so it
+   * won't get readded to the queue.
+   *
+   * @since 1.0
+   * @access private
+   *
+   * @see save_post()
+   */
+  private function process_pub_queue() {
     if (!empty($this -> pub_queue)) {
       foreach ($this->pub_queue as $post_id => $args) {
         $response = $this -> api -> minifeed($args);
@@ -106,10 +248,29 @@ class GOT_CHOSEN_INTG_PLUGIN {
     }
   }
 
+  /**
+   * Callback for admin_menu action.
+   *
+   * Adds the administration menu for the plugins options.
+   *
+   * @since 1.0
+   *
+   * @see __construct()
+   */
   public function admin_menu() {
     add_menu_page('Got Chosen Integration', 'Got Chosen', 'manage_options', 'got_chosen', array(&$this, 'build_menu'), $this -> includes_url . '/images/got_chosen_logo.png');
   }
 
+  /**
+   * Callback for add_menu_page function.
+   *
+   * Outputs the options page as well as handling updating
+   * the options.
+   *
+   * @since 1.0
+   *
+   * @see admin_menu()
+   */
   public function build_menu() {
     // Process submission.
     if ($_POST && isset($_POST['_wpnonce'])) {
@@ -130,10 +291,31 @@ class GOT_CHOSEN_INTG_PLUGIN {
     require_once $this -> includes_path . 'templates' . DIRECTORY_SEPARATOR . 'admin.php';
   }
 
+  /**
+   * Callback for add_meta_boxes_post action.
+   *
+   * Adds the meta box to posts that allows users to choose
+   * if a post is published to the minifeed or not.
+   *
+   * @since 1.0
+   *
+   * @see __construct()
+   */
   public function add_meta_boxes() {
     add_meta_box('gc_intg_minifeed_pub', 'Publish to Got Chosen Minifeed', array(&$this, 'build_meta_box'), 'post', 'side');
   }
 
+  /**
+   * Callback for add_meta_box function.
+   *
+   * Builds the HTML for the meta box.
+   *
+   * @since 1.0
+   *
+   * @see add_meta_boxes()
+   *
+   * @param object $post The current post object being edited/added by a user.
+   */
   public function build_meta_box($post) {
     wp_nonce_field('got chosen save meta', 'gc_meta_wpnonce');
     $publish = get_post_meta($post -> ID, 'gc_minifeed_publish', true);

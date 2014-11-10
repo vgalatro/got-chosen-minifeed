@@ -9,7 +9,7 @@
   s.src = r;
   o.parentNode.insertBefore(s, o)
 })(window, document, "script", "//gotchosen.com/thirdparty/gc.js", "gc");
-/** 
+/**
  * Need to convert the value passed by wp_localize_script into a js bool.
  */
 (function() {
