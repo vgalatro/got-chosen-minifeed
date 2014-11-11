@@ -204,13 +204,13 @@ class GOT_CHOSEN_INTG_PLUGIN {
       update_post_meta($post_id, 'gc_minifeed_publish', $publish);
     }
     // Check if post has been sent to the minifeed API.
-    $minifeed_id = get_post_meta($post_id, 'gc_minifeed_id', true);
+    $minifeed_id = get_post_meta($post_id, 'gc_sent_to_minifeed', true);
     if (empty($minifeed_id) && isset($publish) && $publish) {
       $post = get_post($post_id);
       if ($post -> post_type = 'post') {
         $mini_post = new stdClass();
         $mini_post -> title = $post -> post_title;
-        $mini_post -> body = wp_trim_words($post -> post_content, 150, '') . ' <a href="' . get_permalink($post_id) . '">' . $this -> options['read_more'] . '</a>';
+        $mini_post -> body = wp_trim_words($post -> post_content, 150, '') . get_permalink($post_id);
         $mini_post -> shareable = (bool)$this -> options['shareable'];
         $mini_post -> commentable = (bool)$this -> options['commentable'];
         $args['body'] = json_encode($mini_post);
@@ -240,7 +240,7 @@ class GOT_CHOSEN_INTG_PLUGIN {
       foreach ($this->pub_queue as $post_id => $args) {
         $response = $this -> api -> minifeed($args);
         if ($response) {
-          update_post_meta($post_id, 'gc_minifeed_id', $response -> post_id);
+          update_post_meta($post_id, 'gc_sent_to_minifeed', 1);
           unset($this -> pub_queue[$post_id]);
         }
       }
@@ -283,7 +283,6 @@ class GOT_CHOSEN_INTG_PLUGIN {
         $this -> options['pub_minifeed_default'] = isset($_POST['pub_minifeed_default']) ? 1 : 0;
         $this -> options['shareable'] = isset($_POST['shareable']) ? 1 : 0;
         $this -> options['commentable'] = isset($_POST['commentable']) ? 1 : 0;
-        $this -> options['read_more'] = isset($_POST['read_more']) ? $_POST['read_more'] : $this -> options['read_more'];
         update_option('got_chosen_intg_settings', $this -> options);
       }
     }

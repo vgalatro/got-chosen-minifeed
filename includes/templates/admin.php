@@ -43,10 +43,6 @@
           <input type="checkbox" name="commentable" id="commentable" <?php echo($this -> options['commentable']) ? 'checked="checked"' : ''; ?>
           />
         </div>
-        <div class="gc_option">
-          <label for="read_more">Read more text for minifeed posts: </label>
-          <input type="text" value="<?php echo $this->options['read_more'] ?>" name="read_more" id="read_more" />
-        </div>
       </div>
       <input type="submit" class="button button-primary" value="Update Options">
     </form>

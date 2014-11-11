@@ -3,7 +3,7 @@
  * Plugin Name: Got Chosen Integration
  * Plugin URI: http://gotchosen.com
  * Description: Enables support for Got Chosen's web curtain and minifeed publishing.
- * Version: 1.0
+ * Version: 1.0.1
  */
 
 // Require our class files.
@@ -21,7 +21,7 @@ register_activation_hook(__FILE__, 'got_chosen_intg_activation');
 register_deactivation_hook(__FILE__, 'got_chosen_intg_activation');
 function got_chosen_intg_activation() {
   // Set default option values.
-  $default_opts = array('feedkey' => '', 'shareable' => true, 'commentable' => true, 'read_more' => 'Read full article...', 'pub_minifeed_default' => true, 'webcurtain' => true, 'webcurtain_compat' => false );
+  $default_opts = array('feedkey' => '', 'shareable' => true, 'commentable' => true, 'pub_minifeed_default' => true, 'webcurtain' => true, 'webcurtain_compat' => false );
   update_option('got_chosen_intg_settings', $default_opts);
 }
 
