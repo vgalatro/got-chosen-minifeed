@@ -3,7 +3,7 @@
  * Plugin Name: Got Chosen Integration
  * Plugin URI: http://gotchosen.com
  * Description: Enables support for Got Chosen's web curtain and minifeed publishing.
- * Version: 1.0.1
+ * Version: 1.0.2
  */
 
 // Require our class files.
