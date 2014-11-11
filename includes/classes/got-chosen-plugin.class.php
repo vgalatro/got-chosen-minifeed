@@ -198,6 +198,10 @@ class GOT_CHOSEN_INTG_PLUGIN {
     if (!current_user_can('edit_post', $post_id)) {
       return;
     }
+    // Return if it is a post revision
+    if (wp_is_post_revision($post_id)) {
+      return;
+    }
     // Save our publish option.
     if (isset($_POST['gc_meta_wpnonce']) && wp_verify_nonce($_POST['gc_meta_wpnonce'], 'got chosen save meta')) {
       $publish = isset($_POST['gc_minifeed_publish']) ? 1 : 0;
@@ -210,7 +214,7 @@ class GOT_CHOSEN_INTG_PLUGIN {
       if ($post -> post_type = 'post') {
         $mini_post = new stdClass();
         $mini_post -> title = $post -> post_title;
-        $mini_post -> body = wp_trim_words($post -> post_content, 150, '') . get_permalink($post_id);
+        $mini_post -> body = wp_trim_words($post -> post_content, 150, '') . ' ' . get_permalink($post_id);
         $mini_post -> shareable = (bool)$this -> options['shareable'];
         $mini_post -> commentable = (bool)$this -> options['commentable'];
         $args['body'] = json_encode($mini_post);
