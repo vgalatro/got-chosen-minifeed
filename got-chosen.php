@@ -1,9 +1,9 @@
 <?php
 /**
- * Plugin Name: Got Chosen Integration
+ * Plugin Name: GotChosen Integration
  * Plugin URI: http://gotchosen.com
- * Description: Enables support for Got Chosen's web curtain and minifeed publishing.
- * Version: 1.0.2
+ * Description: Enables support for GotChosen's web curtain and Social Exchange.
+ * Version: 1.0.3
  */
 
 // Require our class files.

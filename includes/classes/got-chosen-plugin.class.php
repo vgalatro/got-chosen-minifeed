@@ -262,7 +262,7 @@ class GOT_CHOSEN_INTG_PLUGIN {
    * @see __construct()
    */
   public function admin_menu() {
-    add_menu_page('Got Chosen Integration', 'Got Chosen', 'manage_options', 'got_chosen', array(&$this, 'build_menu'), $this -> includes_url . '/images/got_chosen_logo.png');
+    add_menu_page('GotChosen Integration', 'GotChosen', 'manage_options', 'got_chosen', array(&$this, 'build_menu'), $this -> includes_url . '/images/gc-thumb.svg');
   }
 
   /**

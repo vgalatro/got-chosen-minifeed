@@ -165,7 +165,9 @@ class GOT_CHOSEN_API_HANDLER {
    * @param string $message Message to add to the notices array. 
    */
   private function update_notices($message) {
-    $this -> notices[] = $message;
+    if (!in_array($message, $this -> notices)) {
+      $this -> notices[] = $message;
+    }
     set_transient('got_chosen_api_notices', $this -> notices);
   }
   

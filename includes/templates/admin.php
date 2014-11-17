@@ -1,5 +1,5 @@
 <div class="wrap">
-  <h2 class="gc_title"><img src="<?php echo $this->includes_url ?>/images/got_chosen_logo.png" />Got Chosen Integration</h2>
+  <h2 class="gc_title"><img src="<?php echo $this->includes_url ?>/images/gc-thumb.svg" />GotChosen Integration</h2>
   <div>
     <form action="" method="post">
       <?php wp_nonce_field('got chosen save options'); ?>
@@ -26,20 +26,20 @@
           </p>
         </div>
       </div>
-      <h3>Minifeed Publishing Options</h3>
+      <h3>Social Exchange Options</h3>
       <div class="gc_opts_group">
         <div class="gc_option">
-          <label for="pub_minifeed_default">Default setting for publishing posts to your minifeed: </label>
+          <label for="pub_minifeed_default">Default setting for publishing posts to the Social Exchange: </label>
           <input type="checkbox" name="pub_minifeed_default" id="pub_minifeed_default" <?php echo($this -> options['pub_minifeed_default']) ? 'checked="checked"' : ''; ?>
           />
         </div>
         <div class="gc_option">
-          <label for="shareable">Make minifeed posts shareable: </label>
+          <label for="shareable">Make Social Exchange posts shareable: </label>
           <input type="checkbox" name="shareable" id="shareable" <?php echo($this -> options['shareable']) ? 'checked="checked"' : ''; ?>
           />
         </div>
         <div class="gc_option">
-          <label for="commentable">Make minifeed posts commentable: </label>
+          <label for="commentable">Make Social Exchange posts commentable: </label>
           <input type="checkbox" name="commentable" id="commentable" <?php echo($this -> options['commentable']) ? 'checked="checked"' : ''; ?>
           />
         </div>
