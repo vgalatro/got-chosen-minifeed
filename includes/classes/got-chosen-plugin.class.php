@@ -218,6 +218,9 @@ class GOT_CHOSEN_INTG_PLUGIN {
         $mini_post -> body = wp_trim_words($post -> post_content, 150, '') . ' ' . get_permalink($post_id);
         $mini_post -> shareable = (bool)$this -> options['shareable'];
         $mini_post -> commentable = (bool)$this -> options['commentable'];
+        if ($image_src = $this -> get_image_src($post)) {
+          $mini_post -> media = $image_src;
+        }
         $args['body'] = json_encode($mini_post);
         $this -> pub_queue[$post_id] = $args;
       }
@@ -227,6 +230,42 @@ class GOT_CHOSEN_INTG_PLUGIN {
     $this -> process_pub_queue();
   }
 
+  /**
+   * Gets the image source for a post.
+   * 
+   * Looks for a featured image source, or the source of the 
+   * first image in the body of the post, and returns it.
+   * 
+   * @since 1.0.3
+   * @access private
+   * 
+   * @see save_post()
+   * 
+   * @param object $post The current post object.
+   * @return mixed The URL to the image source, or false.
+   */
+  private function get_image_src(&$post) {
+    if ($post_thumb = get_post_thumbnail_id($post->ID)) {
+      return wp_get_attachment_url($post_thumb);
+    }
+    else {
+      // Load content into DOMDocument.
+      $post_dom = new DOMDocument();
+      $post_dom -> loadHTML($post->post_content);
+      // Find all images.
+      $images = $post_dom -> getElementsByTagName('img');
+      // If we found some, continue.
+      if ($images -> length > 0) {
+        $first_image = $images -> item(0);
+        // Check that the first image has a src attribute,
+        // then return it.
+        if ($first_image -> hasAttribute('src')) {
+          return $first_image -> getAttribute('src');
+        }
+      }
+    }
+    return false;
+  }
   /**
    * Processes the publish queue.
    *
