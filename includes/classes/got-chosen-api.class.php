@@ -9,7 +9,7 @@ class GOT_CHOSEN_API_HANDLER {
    * 
    * @since 1.0
    * @access private
-   * @var string $api_url The base URL of the Got Chosen API.
+   * @var string $api_url The base URL of the GotChosen API.
    */
   private $api_url = 'http://devapi.gotchosen.com/api/';
   
@@ -187,7 +187,7 @@ class GOT_CHOSEN_API_HANDLER {
     if (!empty($this -> notices)) {
       echo '<div class="error">';
       foreach ($this->notices as $notice) {
-        echo '<p>Got Chosen Integration: ' . $notice . '</p>';
+        echo '<p>GotChosen Integration: ' . $notice . '</p>';
       }
       echo '</div>';
       delete_transient('got_chosen_api_notices');

@@ -1,13 +1,5 @@
-/** Admin Styles for Got Chosen Integration plugin **/
+/** Admin styles for GotChosen Integration plugin **/
 
-.gc_opts_group {
-  padding: 10px;
-}
-
-.gc_option {
-  margin-bottom: 5px;
-}
-
-.gc_title img {
-  padding-right: 10px;
-}
+#toplevel_page_got_chosen img {
+  height: 20px;
+}  

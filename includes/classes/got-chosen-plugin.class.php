@@ -172,8 +172,9 @@ class GOT_CHOSEN_INTG_PLUGIN {
    */
   public function admin_enqueue_scripts() {
     if (isset($_GET['page']) && $_GET['page'] == 'got_chosen') {
-      wp_enqueue_style('gc_intg_admin_css', $this -> includes_url . '/css/admin.css');
+      wp_enqueue_style('gc_intg_settings_css', $this -> includes_url . '/css/settings.css');
     }
+    wp_enqueue_style('gc_intg_admin_css', $this -> includes_url . '/css/admin.css');
   }
 
   /**
@@ -305,7 +306,7 @@ class GOT_CHOSEN_INTG_PLUGIN {
    * @see __construct()
    */
   public function add_meta_boxes() {
-    add_meta_box('gc_intg_minifeed_pub', 'Publish to Got Chosen Minifeed', array(&$this, 'build_meta_box'), 'post', 'side');
+    add_meta_box('gc_intg_minifeed_pub', 'Publish to GotChosen Minifeed', array(&$this, 'build_meta_box'), 'post', 'side');
   }
 
   /**
@@ -330,7 +331,7 @@ class GOT_CHOSEN_INTG_PLUGIN {
     if ($publish) {
       $checked = 'checked="checked"';
     }
-    echo '<label for="gc_minifeed_publish">Publish to Got Chosen minifeed: </label>';
+    echo '<label for="gc_minifeed_publish">Publish to GotChosen minifeed: </label>';
     echo '<input type="checkbox" name="gc_minifeed_publish" id="gc_minifeed_publish" ' . $checked . '/>';
   }
 
