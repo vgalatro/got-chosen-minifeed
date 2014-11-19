@@ -219,7 +219,7 @@ class GOT_CHOSEN_INTG_PLUGIN {
         $mini_post -> shareable = (bool)$this -> options['shareable'];
         $mini_post -> commentable = (bool)$this -> options['commentable'];
         if ($image_src = $this -> get_image_src($post)) {
-          $mini_post -> media = $image_src;
+          $mini_post -> media = array($image_src);
         }
         $args['body'] = json_encode($mini_post);
         $this -> pub_queue[$post_id] = $args;
